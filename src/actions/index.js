@@ -13,3 +13,13 @@ export const addTicket = (ticket) => {
     id: id
   }
 }
+
+export const updateTime = (id, formattedWaitTime) => ({
+  type: 'UPDATE_TIME',
+  id: id,
+  formattedWaitTime: formattedWaitTime
+});
+
+export const toggleForm = () => ({
+  type: 'TOGGLE_FORM'
+});

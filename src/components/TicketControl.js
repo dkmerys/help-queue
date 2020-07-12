@@ -14,24 +14,38 @@ class TicketControl extends React.Component {
     super(props);
     console.log(props);
     this.state = {
-      formVisibleOnPage: false,
       selectedTicket: null,
       editing: false
     };
   }
 
+  componentDidMount() {
+    this.waitTimeUpdateTimer = setInterval(() =>
+      this.updateTicketElapsedWaitTime(),
+    1000
+    );
+  }
+
+  componentWillUnmount(){
+    console.log('component unmounted!');
+    clearInterval(this.waitUpdateTimer);
+  }
+
+  updateTicketElapsedWaitTime = () => {
+    console.log('tick');
+  }
+
   handleClick = () => {
     if(this.state.selectedTicket != null) {
       this.setState({
-        formVisibleOnPage: false,
         selectedTicket: null,
         editing: false
-        });
-      } else {
-        this.setState(prevState => ({
-          formVisibleOnPage: !prevState.formVisibleOnPage,
-      }));
-    }
+      });
+    } else {
+      const { dispatch } = this.props;
+      const action = a.toggleForm();
+      dispatch(action);
+    };
   }
 
   handleEditClick = () => {
@@ -43,7 +57,8 @@ class TicketControl extends React.Component {
     const { dispatch } = this.props;
     const action = a.addTicket(newTicket);
     dispatch(action);
-    this.setState({formVisibleOnPage: false})
+    const action2 = a.toggleForm()
+    dispatch(action2);
   }
   
   handleChangingSelectedTicket = (id) => {
@@ -82,7 +97,7 @@ class TicketControl extends React.Component {
                                 onClickingDelete = {this.handleDeletingTicket} 
                                 onClickingEdit = {this.handleEditClick}/>
       buttonText = "Return to Ticket List";
-    } else if (this.state.formVisibleOnPage) {
+    } else if (this.props.formVisibleOnPage) {
       currentlyVisibleState = <NewTicketForm  onNewTicketCreation={this.handleAddingNewTicketToList}/>
       buttonText = "Return to Ticket List";
     } else {
@@ -96,7 +111,6 @@ class TicketControl extends React.Component {
       </React.Fragment> 
     );
   }
-
 }
 
 TicketControl.propTypes = {
@@ -105,7 +119,8 @@ TicketControl.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    masterTicketList: state
+    masterTicketList: state,
+    formVisibleOnPage: state.formVisibleOnPage
   }
 }
 
